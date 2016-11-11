@@ -4,6 +4,7 @@
  * This controller defines the APIs
  */
 namespace app\ApiController;
+use app\ApiController as Api;
 use DbHandler as DbHandler;
 use PlugController as PlugController;
 use SensorController as SensorController;
@@ -20,7 +21,17 @@ use SensorController as SensorController;
 	{
 		$db = new DbHandler();
 
-		$value = $db->getAllDevices(); 
+		$devices = $db->getAllDevices();
+		$macs = Api\ApiController::getArp();
+		$activeDevices = [];
+		foreach ($devices as $device){
+			if( in_array($device['device_MAC'], $macs)){
+
+				array_push($activeDevices, $device);
+			}
+		}
+		var_dump($activeDevices);
+		exit();
 			if(isset($_GET['id'])){
 				$id = $_GET['id'];
 				
@@ -29,6 +40,26 @@ use SensorController as SensorController;
 		 		$value = $db->getDeviceInfo($mac);
 			}
 	 	return $value;
+	}
+	public function getArp()
+	{
+		$a=shell_exec("sh /var/www/html/getarp.sh");
+		$file_read = fopen(__DIR__."/../getarp.txt", "r") or die("Unable to open the file");
+		$value = array();
+		while(!feof($file_read)){
+			$line_of_file = fgets($file_read);
+		    $processed = preg_replace('!\s+!', ' ', $line_of_file);
+		    if(strpos($processed, 'incomplete') === false)
+			{
+		    	$exploded = explode(" ", $processed);
+		        if($exploded[2]!=null)
+				{
+					array_push($value, $exploded[2]);
+				}
+		        	
+		    }
+		}
+		return $value;
 	}
 	public function setDeviceStatus($id, $status)
 	{
