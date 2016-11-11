@@ -52,7 +52,7 @@ use SensorController as SensorController;
 		    if(strpos($processed, 'incomplete') === false)
 			{
 		    	$exploded = explode(" ", $processed);
-		        if($exploded[2]!=null)
+		        if(isset($exploded[2]))
 				{
 					array_push($value, $exploded[2]);
 				}

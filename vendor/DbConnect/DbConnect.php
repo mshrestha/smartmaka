@@ -9,7 +9,7 @@ class DBConnect
 	public function Connect()
 	{
 		$configs = require __DIR__ . '/../../includes/app.config.php';
-		$host = $configs['hostname'];
+		$host = $configs['host'];
 		$username = $configs['username'];
 		$password = $configs['password'];
 		$database = $configs['database'];
