@@ -1,5 +1,5 @@
 #     All Config Files    #
 ###########################
 
-includes/config.php
+includes/*.config.php
 
