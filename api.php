@@ -30,31 +30,16 @@ include __DIR__ . '/app/plugController.php';
 include __DIR__ . '/app/sensorController.php';
 
 
-
-/**** This is an example of registering a plug ***
-
-	$plug1 = new PlugController;
-	$plug1->init('5c:cf:7f:80:39:dd');
-
-	//Turning a plug on
-	$plug1->turnOn();
-
-	//Getting status of a plug
-	echo $plug1->getStatus();
-*/
-
-/****************************************************/
-
-
-$value = Api\ApiController::listApi();
+//$value = Api\ApiController::listApi();
 
 $value = "An error has occurred";
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
+
 	$value = Api\ApiController::listApi();
 }
 
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
-	
+
 	$value = "NO ID SPECIFIED";
 
 	if(isset($_POST['id'])){
@@ -75,7 +60,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
 
 function procmsg($topic,$msg)
 {
-	exit(json_encode($msg));
+	$temperature = [number_format(floatval($msg), 2)];
+	exit(json_encode($temperature));
 }
 //return JSON array
 exit(json_encode($value));

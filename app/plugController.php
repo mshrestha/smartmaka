@@ -17,7 +17,7 @@ use Kazi\Application as Kazi;
 	{
 			$this->switchPlug(0);
 			$this->status = 1;
-	
+			return 1;
 	}
 	/**
 	 * Turns off the plug device
@@ -27,7 +27,7 @@ use Kazi\Application as Kazi;
 	{
 		$this->switchPlug(1);
 		$this->status = 0;
-	
+		return 0;
 	}
 	public function switchPlug($status)
 	{

@@ -63,6 +63,7 @@ use SensorController as SensorController;
 	}
 	public function setDeviceStatus($id, $status)
 	{
+		$value = null;
 			$db = new DbHandler();
 			$plug = new PlugController;
 			
@@ -70,14 +71,15 @@ use SensorController as SensorController;
 
 			if($status == 1){
 				//Turning a plug on
-				$plug->turnOn();
+				$value = $plug->turnOn();
 			}
 			else if($status == 0){
 				//Turning a plug off
-				$plug->turnOff();
+				$value = $plug->turnOff();
 			}else{
 				echo "DIDNT GET INTO EITHER";
 			}
+		return $value;
 	
 	}
 	public function getDeviceStatus($id)
