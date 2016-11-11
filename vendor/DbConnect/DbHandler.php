@@ -4,7 +4,7 @@ class DbHandler{
 	private $conn;
 
 	function __construct(){
-		require_once __DIR__ . 'DBConnect.php';
+		require_once __DIR__ . '/DbConnect.php';
 		$db = new DBConnect();
 		$this->conn = $db->Connect();
 	}
