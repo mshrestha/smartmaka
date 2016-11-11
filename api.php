@@ -1,5 +1,7 @@
 <?php
-use app\ApiController;
+use Kazi\Application as Kazi;
+use app\ApiController as Api;
+
 
 /**
  * This makes our life easier when dealing with paths. Everything is relative
@@ -18,81 +20,62 @@ if (php_sapi_name() === 'cli-server') {
 
 // Composer autoloading
 //include __DIR__ . 'includes/autoload.php';
+
+include __DIR__ . '/vendor/DbConnect/DbHandler.php';
+include __DIR__ . '/vendor/kazi/Kazi.Application.php';
+include __DIR__ . '/vendor/phpMQTT/phpMQTT.php';
 include __DIR__ . '/app/apiController.php';
+include __DIR__ . '/app/deviceController.php';
+include __DIR__ . '/app/plugController.php';
+include __DIR__ . '/app/sensorController.php';
 
-use app\ApiController as Api;
 
-// This is the API, 2 possibilities: show the list of devices or show a specific device by id.
 
-echo Api\ApiController::listApi();
-exit();
-function get_app_by_id($id)
-{
-  $app_info = array();
+/**** This is an example of registering a plug ***
 
-  // build JSON array.
-  switch ($id){
-    case 1:
-      $app_info = array("app_name" => "Living Room Light", "status" => 0); 
-      break;
-    case 2:
-      $app_info = array("app_name" => "Living Room Temperature", "status" => 26);
-      break;
-    case 3:
-      $app_info = array("app_name" => "Water Pump", "status" => 1);
-      break;
-    case 4:
-      $app_info = array("app_name" => "Water Pump Sensor", "status" => 32 );
-      break;
-  }
+	$plug1 = new PlugController;
+	$plug1->init('5c:cf:7f:80:39:dd');
 
-  return $app_info;
-}
+	//Turning a plug on
+	$plug1->turnOn();
 
-function get_app_list()
-{
-  //normally this info would be pulled from a database.
-  //build JSON array
-  $app_list = array(array("id" => 1, "name" => "Web Demo"), array("id" => 2, "name" => "Audio Countdown"), array("id" => 3, "name" => "The Tab Key"), array("id" => 4, "name" => "Music Sleep Timer")); 
+	//Getting status of a plug
+	echo $plug1->getStatus();
+*/
 
-  return $app_list;
-}
+/****************************************************/
 
-$possible_url = array("get_app_list", "get_app");
+
+$value = Api\ApiController::listApi();
 
 $value = "An error has occurred";
 if($_SERVER['REQUEST_METHOD'] === 'GET'){
-$value = [["id"=>1, "name"=>"Living Room Lights"], 
-          ["id"=>2, "name"=>"Living Room Temperature"],
-          ["id"=>3, "name"=>"Water Pump"],
-          ["id"=>4, "name"=>"Water Pump Sensor"]
-          ];
-	if(isset($_GET['id'])){
- 		$value = get_app_by_id($_GET['id']);
+	$value = Api\ApiController::listApi();
+}
+
+if($_SERVER['REQUEST_METHOD'] === 'POST'){
+	
+	$value = "NO ID SPECIFIED";
+
+	if(isset($_POST['id'])){
+	$value = "Device Not Accesible";
+	
+	$id = $_POST['id'];
+	
+		//Turning Switch on or off
+		if(isset($_POST['status'])){
+			$status = $_POST['status'];
+			$value = Api\ApiController::setDeviceStatus($id, $status);
+		}else{
+			Api\ApiController::getDeviceStatus($id);
+		}
 	}
+	
 }
-if (isset($_GET["action"]) && in_array($_GET["action"], $possible_url))
+
+function procmsg($topic,$msg)
 {
-  switch ($_GET["action"])
-    {
-      case "GET":
-        $value = get_app_list();
-        break;
-      case "get_app":
-        if (isset($_GET["id"]))
-          $value = get_app_by_id($_GET["id"]);
-        else
-          $value = "Missing argument";
-        break;
-    }
-}
-if(isset($_POST['id']))
-{
-    $value = get_app_by_id($_POST['id']);
-}
-if(isset($_POST['status'])){
-	$value = $_POST['status'];
+	exit(json_encode($msg));
 }
 //return JSON array
 exit(json_encode($value));
-?>
